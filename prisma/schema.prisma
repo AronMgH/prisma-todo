@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  id String @id @default(uuid())
+  title String
+  complete Boolean
+  createdAt DateTime  @default(now())
+  updatedat DateTime @updatedAt
+}
+
+
+model Meeting {
+  id Int @id @default(autoincrement())
+  startDate DateTime 
+  endDate DateTime
+  location String
+  version String
+  description String 
+  appointedBoardMembers BoardMember[] @relation("New Board Member")
+  meetingAgendas Agenda[] @relation("Meetting Agendas")
+}
+
+model BoardMember {
+  id Int @id @default(autoincrement())
+  fullName String
+  phoneNumber String
+  email String @unique
+  position String
+  meetingId Int 
+  appointedMeeting Meeting @relation("New Board Member", fields: [meetingId], references: [id])
+  voteCount Int @default(0)
+  votedShareHolders ShareHolders[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  fullName String 
+  userName String @unique
+  phoneNumber String @unique
+  email String @unique
+  password String
+  role String
+}
+
+model ShareHolders {
+    id Int @id @default(autoincrement())
+    fullName String
+    phoneNumber String? 
+    email String?
+    numberOfShares Int
+    votedBoardMember BoardMember[]
+}
+
+model Agenda {
+  id Int @id @default(autoincrement())
+  description String 
+  approved Int @default(0)
+  rejected Int @default(0)
+  abstain Int @default(0)
+  meetingId Int 
+  meeting Meeting @relation("Meetting Agendas", fields: [meetingId], references: [id])
+}
+
